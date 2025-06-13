@@ -14,3 +14,8 @@ from io import BytesIO
 import nltk
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
+
+# Загрузка ресурсов NLTK
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('wordnet')
