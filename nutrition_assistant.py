@@ -19,3 +19,16 @@ from nltk.corpus import stopwords
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
+
+
+class NutritionAssistant:
+    def __init__(self, data_file="nutrition_data.json", api_key=None):
+        self.data_file = data_file
+        self.user_profile = {}
+        self.food_log = []
+        self.diet_goals = []
+        self.favorites = []
+        self.api_key = api_key  # Ключ для Nutritionix API
+        self.lemmatizer = WordNetLemmatizer()
+        self.load_data()
+    
