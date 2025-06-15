@@ -31,4 +31,15 @@ class NutritionAssistant:
         self.api_key = api_key  # Ключ для Nutritionix API
         self.lemmatizer = WordNetLemmatizer()
         self.load_data()
+
+    def load_data(self):
+        """Загрузка данных из файла"""
+        if os.path.exists(self.data_file):
+            with open(self.data_file) as f:
+                data = json.load(f)
+                self.user_profile = data.get("user_profile", {})
+                self.food_log = data.get("food_log", [])
+                self.diet_goals = data.get("diet_goals", [])
+                self.favorites = data.get("favorites", [])
+    
     
