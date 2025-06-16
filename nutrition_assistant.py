@@ -42,4 +42,14 @@ class NutritionAssistant:
                 self.diet_goals = data.get("diet_goals", [])
                 self.favorites = data.get("favorites", [])
     
+    def save_data(self):
+        """Сохранение данных в файл"""
+        data = {
+            "user_profile": self.user_profile,
+            "food_log": self.food_log,
+            "diet_goals": self.diet_goals,
+            "favorites": self.favorites
+        }
+        with open(self.data_file, "w") as f:
+            json.dump(data, f, indent=2)
     
