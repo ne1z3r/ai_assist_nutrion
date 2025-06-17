@@ -53,3 +53,18 @@ class NutritionAssistant:
         with open(self.data_file, "w") as f:
             json.dump(data, f, indent=2)
     
+    def setup_profile(self, name, age, gender, height, weight, activity_level, dietary_preferences=None):
+        """Настройка профиля пользователя"""
+        self.user_profile = {
+            "name": name,
+            "age": age,
+            "gender": gender.lower(),
+            "height": height,  # см
+            "weight": weight,  # кг
+            "activity_level": activity_level,  # sedentary, light, moderate, active, very_active
+            "dietary_preferences": dietary_preferences or [],  # vegetarian, vegan, gluten-free, etc.
+            "join_date": datetime.now().isoformat(),
+            "last_updated": datetime.now().isoformat()
+        }
+        self.save_data()
+        return self.user_profile
