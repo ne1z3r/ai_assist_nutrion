@@ -68,3 +68,21 @@ class NutritionAssistant:
         }
         self.save_data()
         return self.user_profile
+
+    def set_goal(self, goal_type, target_value, target_date=None):
+        """Установка диетической цели"""
+        goal = {
+            "type": goal_type,  # weight_loss, muscle_gain, calorie_deficit, nutrient_target
+            "target_value": target_value,
+            "start_date": datetime.now().isoformat(),
+            "target_date": target_date or (datetime.now() + timedelta(days=30)).isoformat(),
+            "completed": False
+        }
+        
+        if goal_type == "nutrient_target":
+            goal["nutrient"] = target_value.get("nutrient")
+            goal["target_amount"] = target_value.get("amount")
+        
+        self.diet_goals.append(goal)
+        self.save_data()
+        return goal
