@@ -86,3 +86,31 @@ class NutritionAssistant:
         self.diet_goals.append(goal)
         self.save_data()
         return goal
+
+    def log_food(self, food_name, quantity, unit, meal_type, timestamp=None):
+        """Логирование съеденной пищи"""
+        # Получаем информацию о пище
+        food_info = self.get_food_nutrition(food_name)
+        if not food_info:
+            raise ValueError(f"Информация о {food_name} не найдена")
+        
+        # Расчет питательных веществ для количества
+        multiplier = quantity / food_info.get("serving_size", 1)
+        nutrients = {}
+        for nutrient, amount in food_info.get("nutrients", {}).items():
+            nutrients[nutrient] = amount * multiplier
+        
+        log_entry = {
+            "food_name": food_name,
+            "quantity": quantity,
+            "unit": unit,
+            "meal_type": meal_type,  # breakfast, lunch, dinner, snack
+            "timestamp": timestamp or datetime.now().isoformat(),
+            "nutrients": nutrients,
+            "calories": food_info.get("calories", 0) * multiplier
+        }
+        
+        self.food_log.append(log_entry)
+        self.save_data()
+        return log_entry
+    
