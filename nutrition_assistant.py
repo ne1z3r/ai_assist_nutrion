@@ -113,4 +113,18 @@ class NutritionAssistant:
         self.food_log.append(log_entry)
         self.save_data()
         return log_entry
+
+    def get_food_nutrition(self, food_name):
+        """Получение информации о пище (локальная база + API)"""
+        # Проверка локальной базы
+        local_foods = self.load_food_database()
+        for food in local_foods:
+            if food_name.lower() in food["name"].lower():
+                return food
+        
+        # Если нет в локальной базе, используем API
+        if self.api_key:
+            return self.fetch_nutrition_api(food_name)
+        
+        return None
     
