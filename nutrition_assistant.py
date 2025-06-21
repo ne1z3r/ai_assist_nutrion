@@ -127,4 +127,51 @@ class NutritionAssistant:
             return self.fetch_nutrition_api(food_name)
         
         return None
+
+    def load_food_database(self):
+        """Загрузка локальной базы продуктов"""
+        # В реальном приложении это может быть внешний файл
+        return [
+            {
+                "name": "Яблоко",
+                "calories": 52,
+                "serving_size": 100,
+                "unit": "г",
+                "nutrients": {
+                    "protein": 0.3,
+                    "fat": 0.2,
+                    "carbs": 14,
+                    "fiber": 2.4,
+                    "sugar": 10,
+                    "vitamin_c": 4.6
+                }
+            },
+            {
+                "name": "Куриная грудка",
+                "calories": 165,
+                "serving_size": 100,
+                "unit": "г",
+                "nutrients": {
+                    "protein": 31,
+                    "fat": 3.6,
+                    "carbs": 0,
+                    "iron": 1,
+                    "vitamin_b6": 0.6
+                }
+            },
+            {
+                "name": "Овсянка",
+                "calories": 389,
+                "serving_size": 100,
+                "unit": "г",
+                "nutrients": {
+                    "protein": 16.9,
+                    "fat": 6.9,
+                    "carbs": 66,
+                    "fiber": 10.6,
+                    "calcium": 54,
+                    "iron": 4.7
+                }
+            }
+        ]
     
