@@ -174,4 +174,44 @@ class NutritionAssistant:
                 }
             }
         ]
+
+    def fetch_nutrition_api(self, food_name):
+        """Получение информации о пище через API (Nutritionix)"""
+        if not self.api_key:
+            return None
+        
+        url = "https://trackapi.nutritionix.com/v2/natural/nutrients"
+        headers = {
+            "x-app-id": "YOUR_APP_ID",  # Заменить на реальные
+            "x-app-key": self.api_key,
+            "Content-Type": "application/json"
+        }
+        payload = {"query": food_name}
+        
+        try:
+            response = requests.post(url, json=payload, headers=headers)
+            if response.status_code == 200:
+                data = response.json()
+                foods = data.get("foods", [])
+                if foods:
+                    food = foods[0]
+                    nutrients = {
+                        "protein": food.get("nf_protein", 0),
+                        "fat": food.get("nf_total_fat", 0),
+                        "carbs": food.get("nf_total_carbohydrate", 0),
+                        "fiber": food.get("nf_dietary_fiber", 0),
+                        "sugar": food.get("nf_sugars", 0),
+                        "calories": food.get("nf_calories", 0)
+                    }
+                    return {
+                        "name": food.get("food_name", food_name),
+                        "calories": food.get("nf_calories", 0),
+                        "serving_size": food.get("serving_weight_grams", 100),
+                        "unit": "г",
+                        "nutrients": nutrients
+                    }
+        except Exception as e:
+            print(f"Ошибка API: {e}")
+        
+        return None
     
