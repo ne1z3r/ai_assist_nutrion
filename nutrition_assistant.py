@@ -215,3 +215,11 @@ class NutritionAssistant:
         
         return None
     
+    def add_favorite(self, food_name):
+        """Добавление пищи в избранное"""
+        food_info = self.get_food_nutrition(food_name)
+        if food_info:
+            self.favorites.append(food_info)
+            self.save_data()
+            return food_info
+        return None
