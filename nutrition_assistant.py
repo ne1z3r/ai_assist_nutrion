@@ -223,3 +223,28 @@ class NutritionAssistant:
             self.save_data()
             return food_info
         return None
+
+    def calculate_daily_nutrition(self, date=None):
+        """Расчет дневного потребления питательных веществ"""
+        date = date or datetime.now().date()
+        daily_log = [entry for entry in self.food_log 
+                    if datetime.fromisoformat(entry["timestamp"]).date() == date]
+        
+        if not daily_log:
+            return None
+        
+        total_nutrients = {}
+        total_calories = 0
+        
+        for entry in daily_log:
+            total_calories += entry["calories"]
+            for nutrient, amount in entry["nutrients"].items():
+                if nutrient not in total_nutrients:
+                    total_nutrients[nutrient] = 0
+                total_nutrients[nutrient] += amount
+        
+        return {
+            "date": date.isoformat(),
+            "total_calories": total_calories,
+            "nutrients": total_nutrients
+        }
