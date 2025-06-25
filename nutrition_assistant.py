@@ -248,3 +248,16 @@ class NutritionAssistant:
             "total_calories": total_calories,
             "nutrients": total_nutrients
         }
+
+    def calculate_bmr(self):
+        """Расчет базового метаболизма (BMR)"""
+        weight = self.user_profile.get("weight", 70)
+        height = self.user_profile.get("height", 170)
+        age = self.user_profile.get("age", 30)
+        gender = self.user_profile.get("gender", "male")
+        
+        if gender == "male":
+            return 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age)
+        else:
+            return 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age)
+    
