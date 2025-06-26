@@ -261,3 +261,17 @@ class NutritionAssistant:
         else:
             return 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age)
     
+    def calculate_tdee(self):
+        """Расчет общего расхода энергии (TDEE)"""
+        bmr = self.calculate_bmr()
+        activity_level = self.user_profile.get("activity_level", "moderate")
+        
+        multipliers = {
+            "sedentary": 1.2,
+            "light": 1.375,
+            "moderate": 1.55,
+            "active": 1.725,
+            "very_active": 1.9
+        }
+        
+        return bmr * multipliers.get(activity_level, 1.55)
