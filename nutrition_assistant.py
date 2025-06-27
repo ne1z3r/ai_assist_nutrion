@@ -275,3 +275,61 @@ class NutritionAssistant:
         }
         
         return bmr * multipliers.get(activity_level, 1.55)
+
+    def analyze_nutrition_balance(self, days=7):
+        """Анализ баланса питания за период"""
+        end_date = datetime.now().date()
+        start_date = end_date - timedelta(days=days)
+        
+        # Сбор данных за период
+        period_log = [entry for entry in self.food_log 
+                     if start_date <= datetime.fromisoformat(entry["timestamp"]).date() <= end_date]
+        
+        if not period_log:
+            return {}
+        
+        # Расчет средних значений
+        avg_calories = sum(entry["calories"] for entry in period_log) / days
+        avg_nutrients = {}
+        
+        # Инициализация питательных веществ
+        for entry in period_log:
+            for nutrient in entry["nutrients"]:
+                if nutrient not in avg_nutrients:
+                    avg_nutrients[nutrient] = 0
+        
+        # Суммирование
+        for nutrient in avg_nutrients:
+            total = sum(entry["nutrients"].get(nutrient, 0) for entry in period_log)
+            avg_nutrients[nutrient] = total / days
+        
+        # Рекомендуемые нормы (упрощенные)
+        recommendations = {
+            "protein": 56,  # г
+            "fat": 70,      # г
+            "carbs": 310,   # г
+            "fiber": 25,    # г
+            "calcium": 1000, # мг
+            "iron": 18      # мг
+        }
+        
+        # Сравнение с рекомендациями
+        comparison = {}
+        for nutrient, avg_amount in avg_nutrients.items():
+            rec = recommendations.get(nutrient, 0)
+            if rec > 0:
+                percentage = min(150, (avg_amount / rec) * 100)  # Ограничиваем 150%
+                status = "low" if percentage < 80 else "high" if percentage > 120 else "optimal"
+                comparison[nutrient] = {
+                    "average": avg_amount,
+                    "recommended": rec,
+                    "percentage": percentage,
+                    "status": status
+                }
+        
+        return {
+            "average_calories": avg_calories,
+            "tdee": self.calculate_tdee(),
+            "calorie_balance": avg_calories - self.calculate_tdee(),
+            "nutrient_comparison": comparison
+        }
