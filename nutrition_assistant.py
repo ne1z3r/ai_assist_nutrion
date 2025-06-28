@@ -333,3 +333,32 @@ class NutritionAssistant:
             "calorie_balance": avg_calories - self.calculate_tdee(),
             "nutrient_comparison": comparison
         }
+
+    def get_recommendations(self):
+        """Получение персонализированных рекомендаций"""
+        analysis = self.analyze_nutrition_balance()
+        goals = self.diet_goals
+        recommendations = []
+        
+        # Рекомендации по калориям
+        calorie_balance = analysis.get("calorie_balance", 0)
+        main_goal = next((g for g in goals if g["type"] in ["weight_loss", "muscle_gain"]), None)
+        
+        if main_goal:
+            if main_goal["type"] == "weight_loss" and calorie_balance > -200:
+                recommendations.append("Снизьте дневное потребление калорий на 200-500 для достижения цели по снижению веса")
+            elif main_goal["type"] == "muscle_gain" and calorie_balance < 200:
+                recommendations.append("Увеличьте дневное потребление калорий на 200-500 для набора мышечной массы")
+        
+        # Рекомендации по питательным веществам
+        for nutrient, data in analysis.get("nutrient_comparison", {}).items():
+            if data["status"] == "low":
+                recommendations.append(f"Увеличьте потребление {nutrient}. Текущий уровень: {data['average']:.1f}г/день (рекомендуется: {data['recommended']}г)")
+            elif data["status"] == "high":
+                recommendations.append(f"Снизьте потребление {nutrient}. Текущий уровень: {data['average']:.1f}г/день (рекомендуется: {data['recommended']}г)")
+        
+        # Общие рекомендации
+        if not recommendations:
+            recommendations.append("Ваше питание сбалансировано. Продолжайте в том же духе!")
+        
+        return recommendations
