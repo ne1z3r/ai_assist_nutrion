@@ -362,3 +362,25 @@ class NutritionAssistant:
             recommendations.append("Ваше питание сбалансировано. Продолжайте в том же духе!")
         
         return recommendations
+
+    def generate_meal_plan(self, calories=None, days=7):
+        """Генерация плана питания"""
+        target_calories = calories or self.calculate_tdee()
+        
+        # В реальном приложении здесь была бы сложная логика с учетом предпочтений
+        # Для демо используем упрощенный подход
+        meal_plan = []
+        for day in range(days):
+            meals = {
+                "breakfast": self.generate_meal("breakfast", target_calories * 0.25),
+                "lunch": self.generate_meal("lunch", target_calories * 0.35),
+                "dinner": self.generate_meal("dinner", target_calories * 0.30),
+                "snacks": self.generate_meal("snack", target_calories * 0.10)
+            }
+            meal_plan.append({
+                "day": (datetime.now() + timedelta(days=day)).date().isoformat(),
+                "meals": meals,
+                "total_calories": sum(meal["calories"] for meal in meals.values())
+            })
+        
+        return meal_plan
