@@ -384,3 +384,53 @@ class NutritionAssistant:
             })
         
         return meal_plan
+
+    def generate_meal(self, meal_type, target_calories):
+        """Генерация одного приема пищи"""
+        # База рецептов (в реальном приложении должна быть обширной)
+        recipes = [
+            {"name": "Овсянка с фруктами", "type": "breakfast", "calories": 350},
+            {"name": "Тосты с авокадо", "type": "breakfast", "calories": 400},
+            {"name": "Куриный салат", "type": "lunch", "calories": 450},
+            {"name": "Квиноа с овощами", "type": "lunch", "calories": 400},
+            {"name": "Лосось с брокколи", "type": "dinner", "calories": 500},
+            {"name": "Овощное рагу", "type": "dinner", "calories": 350},
+            {"name": "Греческий йогурт", "type": "snack", "calories": 150},
+            {"name": "Ореховая смесь", "type": "snack", "calories": 200}
+        ]
+        
+        # Фильтрация по типу приема пищи
+        filtered = [r for r in recipes if r["type"] == meal_type]
+        
+        # Выбираем рецепт, наиболее близкий к целевым калориям
+        closest = min(filtered, key=lambda x: abs(x["calories"] - target_calories), default=None)
+        
+        return closest or {"name": "Не удалось сгенерировать", "calories": 0}
+    
+    def plot_nutrition_balance(self):
+        """Визуализация баланса питательных веществ"""
+        analysis = self.analyze_nutrition_balance()
+        if not analysis or not analysis.get("nutrient_comparison"):
+            print("Недостаточно данных для визуализации")
+            return
+        
+        comp = analysis["nutrient_comparison"]
+        nutrients = list(comp.keys())
+        current = [comp[n]["average"] for n in nutrients]
+        recommended = [comp[n]["recommended"] for n in nutrients]
+        
+        x = np.arange(len(nutrients))
+        width = 0.35
+        
+        plt.figure(figsize=(12, 6))
+        plt.bar(x - width/2, current, width, label='Фактическое')
+        plt.bar(x + width/2, recommended, width, label='Рекомендуемое')
+        
+        plt.title("Баланс питательных веществ")
+        plt.xlabel("Питательные вещества")
+        plt.ylabel("Количество (г/день)")
+        plt.xticks(x, nutrients)
+        plt.legend()
+        plt.grid(axis='y', linestyle='--', alpha=0.7)
+        plt.tight_layout()
+        plt.show()
