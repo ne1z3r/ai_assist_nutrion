@@ -434,3 +434,87 @@ class NutritionAssistant:
         plt.grid(axis='y', linestyle='--', alpha=0.7)
         plt.tight_layout()
         plt.show()
+
+    def plot_calorie_trend(self, days=30):
+        """Визуализация тренда калорий"""
+        end_date = datetime.now().date()
+        start_date = end_date - timedelta(days=days)
+        
+        dates = []
+        calories = []
+        
+        for i in range(days):
+            current_date = start_date + timedelta(days=i)
+            daily = self.calculate_daily_nutrition(current_date)
+            if daily:
+                dates.append(current_date)
+                calories.append(daily["total_calories"])
+        
+        if not dates:
+            print("Нет данных для визуализации")
+            return
+        
+        tdee = self.calculate_tdee()
+        
+        plt.figure(figsize=(12, 6))
+        plt.plot(dates, calories, 'o-', label='Фактическое потребление')
+        plt.axhline(y=tdee, color='r', linestyle='-', label='Рекомендуемое (TDEE)')
+        
+        # Цели
+        for goal in self.diet_goals:
+            if goal["type"] in ["weight_loss", "muscle_gain"]:
+                target = tdee - 500 if goal["type"] == "weight_loss" else tdee + 300
+                plt.axhline(y=target, color='g', linestyle='--', label=f'Цель: {goal["type"]}')
+        
+        plt.title("Тренд потребления калорий")
+        plt.xlabel("Дата")
+        plt.ylabel("Калории")
+        plt.legend()
+        plt.grid(True, linestyle='--', alpha=0.7)
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+        plt.show()
+    
+    def detect_eating_patterns(self):
+        """Обнаружение паттернов питания с помощью ML"""
+        if len(self.food_log) < 100:
+            print("Недостаточно данных для анализа паттернов")
+            return []
+        
+        # Создаем DataFrame
+        df = pd.DataFrame(self.food_log)
+        df['timestamp'] = pd.to_datetime(df['timestamp'])
+        df['hour'] = df['timestamp'].dt.hour
+        df['weekday'] = df['timestamp'].dt.weekday
+        df['meal_calories'] = df['calories']
+        
+        # Группировка по приемам пищи
+        features = df.groupby(['weekday', 'hour', 'meal_type']).agg({
+            'meal_calories': 'mean',
+            'food_name': 'count'
+        }).reset_index()
+        
+        # Кластеризация
+        X = features[['hour', 'meal_calories']]
+        scaler = StandardScaler()
+        X_scaled = scaler.fit_transform(X)
+        
+        kmeans = KMeans(n_clusters=3, random_state=42)
+        features['cluster'] = kmeans.fit_predict(X_scaled)
+        
+        # Анализ кластеров
+        patterns = []
+        for cluster in sorted(features['cluster'].unique()):
+            cluster_data = features[features['cluster'] == cluster]
+            avg_hour = cluster_data['hour'].mean()
+            avg_calories = cluster_data['meal_calories'].mean()
+            
+            pattern = {
+                "type": f"Паттерн {cluster+1}",
+                "typical_hour": round(avg_hour),
+                "typical_calories": round(avg_calories),
+                "common_meal_types": cluster_data['meal_type'].mode().tolist()
+            }
+            patterns.append(pattern)
+        
+        return patterns
