@@ -518,3 +518,28 @@ class NutritionAssistant:
             patterns.append(pattern)
         
         return patterns
+
+    def generate_report(self):
+        """Генерация отчета о питании"""
+        analysis = self.analyze_nutrition_balance()
+        goals = self.diet_goals
+        recommendations = self.get_recommendations()
+        
+        report = f"Отчет о питании: {self.user_profile['name']}\n"
+        report += "=" * 60 + "\n"
+        report += f"Дата отчета: {datetime.now().date().isoformat()}\n"
+        report += f"Возраст: {self.user_profile['age']} лет, Вес: {self.user_profile['weight']} кг\n"
+        report += f"Дневная норма калорий (TDEE): {analysis.get('tdee', 0):.0f} ккал\n"
+        report += f"Среднее потребление: {analysis.get('average_calories', 0):.0f} ккал/день\n"
+        
+        if goals:
+            report += "\nТекущие цели:\n"
+            for goal in goals:
+                status = "Выполнена" if goal.get("completed") else "В процессе"
+                report += f"- {goal['type']}: {goal['target_value']} (до {goal['target_date'][:10]}) [{status}]\n"
+        
+        report += "\nРекомендации:\n"
+        for i, rec in enumerate(recommendations, 1):
+            report += f"{i}. {rec}\n"
+        
+        return report
