@@ -543,3 +543,48 @@ class NutritionAssistant:
             report += f"{i}. {rec}\n"
         
         return report
+
+
+# Пример использования
+if __name__ == "__main__":
+    assistant = NutritionAssistant()
+    
+    # Настройка профиля
+    if not assistant.user_profile:
+        assistant.setup_profile("Алексей", 35, "male", 180, 85, "moderate", ["balanced"])
+    
+    # Установка целей
+    if not assistant.diet_goals:
+        assistant.set_goal("weight_loss", 78)  # Целевой вес
+        
+    # Логирование пищи
+    assistant.log_food("Яблоко", 150, "г", "snack")
+    assistant.log_food("Куриная грудка", 200, "г", "dinner")
+    assistant.log_food("Овсянка", 100, "г", "breakfast")
+    
+    # Добавление в избранное
+    assistant.add_favorite("Овсянка")
+    
+    # Анализ питания
+    analysis = assistant.analyze_nutrition_balance()
+    print("\nАнализ питания за неделю:")
+    print(f"Среднее потребление калорий: {analysis['average_calories']:.0f} ккал")
+    print(f"Рекомендуемое (TDEE): {analysis['tdee']:.0f} ккал")
+    
+    # Рекомендации
+    print("\nРекомендации:")
+    for rec in assistant.get_recommendations():
+        print(f"- {rec}")
+    
+    # Генерация плана питания
+    print("\nПример плана питания на завтра:")
+    meal_plan = assistant.generate_meal_plan(days=1)
+    for meal in meal_plan[0]["meals"].values():
+        print(f"- {meal['name']}: {meal['calories']} ккал")
+    
+    # Визуализация
+    assistant.plot_nutrition_balance()
+    assistant.plot_calorie_trend()
+    
+    # Отчет
+    print("\n" + assistant.generate_report())
