@@ -182,7 +182,7 @@ class NutritionAssistant:
         
         url = "https://trackapi.nutritionix.com/v2/natural/nutrients"
         headers = {
-            "x-app-id": "YOUR_APP_ID",  # Заменить на реальные
+            "x-app-id": "YOUR_APP_ID",  # Заменить на реальные os
             "x-app-key": self.api_key,
             "Content-Type": "application/json"
         }
@@ -587,4 +587,5 @@ if __name__ == "__main__":
     assistant.plot_calorie_trend()
     
     # Отчет
+
     print("\n" + assistant.generate_report())
