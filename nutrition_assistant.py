@@ -28,7 +28,7 @@ class NutritionAssistant:
         self.food_log = []
         self.diet_goals = []
         self.favorites = []
-        self.api_key = api_key  # Ключ для Nutritionix API
+        self.api_key = api_key  # Ключ для Nutritionix API key
         self.lemmatizer = WordNetLemmatizer()
         self.load_data()
 
@@ -589,3 +589,4 @@ if __name__ == "__main__":
     # Отчет
 
     print("\n" + assistant.generate_report())
+
